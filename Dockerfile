@@ -1,0 +1,1 @@
+docker build -t ${{ env.IMAGE_NAME }} -f ./docker/dockerfile .
