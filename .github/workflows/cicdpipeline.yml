@@ -16,7 +16,7 @@ jobs:
       VENV: venv
       REQUIREMENTS_FILE: requirements.txt
       LINT_REPORT_DIR: lint_reports
-      MODEL_SCRIPT: model.py
+      MODEL_SCRIPT: housingdatamodel.py
 
     steps:
     # Step 1: Checkout the repository
