@@ -3,6 +3,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from xgboost import XGBRegressor
 from sklearn.metrics import mean_absolute_error
+import joblib
 
 # Read the data
 X = pd.read_csv('dataset/train.csv', index_col='Id')
@@ -45,4 +46,6 @@ my_model_1.fit(X_train, y_train)
 predictions_1 = my_model_1.predict(X_valid)
 
 mae_1 = mean_absolute_error(predictions_1, y_valid)
-print(mae_1)
+
+model_filename = 'xgboost_model.joblib'
+joblib.dump(my_model_1, model_filename) 
