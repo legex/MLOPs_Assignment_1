@@ -3,23 +3,24 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - main  # Run the workflow on pushes to the main branch
+      - main  # Trigger on push to main
   pull_request:
     branches:
-      - main  # Run the workflow on pull requests to the main branch
+      - main  # Trigger on pull request to main
 
 jobs:
   pipeline:
-    runs-on: windows-latest  # Use a Windows runner
+    runs-on: ubuntu-latest  # Linux runner
 
     env:
       VENV: venv
       REQUIREMENTS_FILE: requirements.txt
       LINT_REPORT_DIR: lint_reports
-      MODEL_SCRIPT: housingdatamodel.py
+      MODEL_SCRIPT: housingmodel.py  # Path to your model.py
+      TEST_SCRIPT: test_script.py  # Path to your test_case.py
 
     steps:
-    # Step 1: Checkout the repository
+    # Step 1: Checkout repository
     - name: Checkout repository
       uses: actions/checkout@v3
 
@@ -27,13 +28,13 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.x'  # Specify the required Python version
+        python-version: '3.x'  # Specify the Python version
 
     # Step 3: Install dependencies
     - name: Install dependencies
       run: |
         python -m venv ${{ env.VENV }}
-        ${{ env.VENV }}\Scripts\activate
+        source ${{ env.VENV }}/bin/activate
         pip install --upgrade pip
         pip install -r ${{ env.REQUIREMENTS_FILE }}
         pip install flake8 flake8-html pytest
@@ -41,22 +42,22 @@ jobs:
     # Step 4: Run linting
     - name: Run linting
       run: |
-        ${{ env.VENV }}\Scripts\activate
-        mkdir ${{ env.LINT_REPORT_DIR }}
+        source ${{ env.VENV }}/bin/activate
+        mkdir -p ${{ env.LINT_REPORT_DIR }}
         flake8 --max-line-length=120 --format=html --htmldir=${{ env.LINT_REPORT_DIR }} .
-      continue-on-error: true  # Allow the pipeline to continue even if linting fails
+      continue-on-error: true  # Allow pipeline to continue even if linting fails
 
-    # Step 5: Run tests
+    # Step 5: Run tests from test_case.py
     - name: Run tests
       run: |
-        ${{ env.VENV }}\Scripts\activate
-        pytest --disable-warnings --junitxml=test-results.xml
+        source ${{ env.VENV }}/bin/activate
+        pytest ${{ env.TEST_SCRIPT }} --disable-warnings --junitxml=test-results.xml
 
     # Step 6: Deploy the ML model
     - name: Deploy ML Model
       run: |
-        ${{ env.VENV }}\Scripts\activate
-        python ${{ env.MODEL_SCRIPT }}
+        source ${{ env.VENV }}/bin/activate
+        python ${{ env.MODEL_SCRIPT }}  # Run your model script
 
     # Step 7: Upload linting and test results as artifacts
     - name: Upload Linting Report
