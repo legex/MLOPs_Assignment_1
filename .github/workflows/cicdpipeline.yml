@@ -16,8 +16,9 @@ jobs:
       VENV: venv
       REQUIREMENTS_FILE: requirements.txt
       LINT_REPORT_DIR: lint_reports
-      MODEL_SCRIPT: housingmodel.py  # Path to your model.py
-      TEST_SCRIPT: test_script.py  # Path to your test_case.py
+      MODEL_SCRIPT: housingdatamodel.py
+      TEST_SCRIPT: test_script.py
+      IMAGE_NAME: housingpricemodel  # Set your Docker image name (local)
 
     steps:
     # Step 1: Checkout repository
@@ -28,7 +29,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.x'  # Specify the Python version
+        python-version: '3.x'
 
     # Step 3: Install dependencies
     - name: Install dependencies
@@ -45,21 +46,31 @@ jobs:
         source ${{ env.VENV }}/bin/activate
         mkdir -p ${{ env.LINT_REPORT_DIR }}
         flake8 --max-line-length=120 --format=html --htmldir=${{ env.LINT_REPORT_DIR }} .
-      continue-on-error: true  # Allow pipeline to continue even if linting fails
+      continue-on-error: true
 
-    # Step 5: Run tests from test_case.py
+    # Step 5: Run tests
     - name: Run tests
       run: |
         source ${{ env.VENV }}/bin/activate
         pytest ${{ env.TEST_SCRIPT }} --disable-warnings --junitxml=test-results.xml
 
-    # Step 6: Deploy the ML model
-    - name: Deploy ML Model
+    # Step 6: Train the model and save it
+    - name: Train and Save Model
       run: |
         source ${{ env.VENV }}/bin/activate
-        python ${{ env.MODEL_SCRIPT }}  # Run your model script
+        python ${{ env.MODEL_SCRIPT }}  # This will save the model using joblib
 
-    # Step 7: Upload linting and test results as artifacts
+    # Step 7: Build Docker image (locally, no push to registry)
+    - name: Build Docker image
+      run: |
+        docker build -t ${{ env.IMAGE_NAME }} .
+
+    # Step 8: Run the Docker container (locally)
+    - name: Run Docker container
+      run: |
+        docker run -d -p 5000:5000 ${{ env.IMAGE_NAME }}
+
+    # Step 9: Upload linting and test results as artifacts
     - name: Upload Linting Report
       if: always()
       uses: actions/upload-artifact@v3
