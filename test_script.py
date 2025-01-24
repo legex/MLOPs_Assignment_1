@@ -5,23 +5,23 @@ from xgboost import XGBRegressor
 from sklearn.metrics import mean_absolute_error
 
 def test_dataset_availability():
-    assert os.path.exists('MLOPs_Assignment_1/dataset/train.csv'), "Training dataset is missing"
-    assert os.path.exists('MLOPs_Assignment_1/dataset/test.csv'), "Test dataset is missing"
+    assert os.path.exists('dataset/train.csv'), "Training dataset is missing"
+    assert os.path.exists('dataset/test.csv'), "Test dataset is missing"
 
 def test_dataset_columns():
-    train_data = pd.read_csv('MLOPs_Assignment_1/dataset/train.csv')
+    train_data = pd.read_csv('dataset/train.csv')
     expected_columns = ['SalePrice', 'OverallQual', 'GrLivArea']  # Add expected column names
     for column in expected_columns:
         assert column in train_data.columns, f"Missing expected column: {column}"
 
 def test_no_missing_target():
-    train_data = pd.read_csv('MLOPs_Assignment_1/dataset/train.csv')
+    train_data = pd.read_csv('dataset/train.csv')
     assert train_data['SalePrice'].notna().all(), "Target column contains missing values"
 
 
 def test_one_hot_encoding():
-    train_data = pd.read_csv('MLOPs_Assignment_1/dataset/train.csv', index_col='Id')
-    test_data = pd.read_csv('MLOPs_Assignment_1/dataset/test.csv', index_col='Id')
+    train_data = pd.read_csv('dataset/train.csv', index_col='Id')
+    test_data = pd.read_csv('dataset/test.csv', index_col='Id')
     
     train_data.dropna(axis=0, subset=['SalePrice'], inplace=True)
     y = train_data['SalePrice']
@@ -49,8 +49,8 @@ def test_one_hot_encoding():
 
 
 def test_model_training_and_prediction():
-    train_data = pd.read_csv('MLOPs_Assignment_1/dataset/train.csv', index_col='Id')
-    test_data = pd.read_csv('MLOPs_Assignment_1/dataset/test.csv', index_col='Id')
+    train_data = pd.read_csv('dataset/train.csv', index_col='Id')
+    test_data = pd.read_csv('dataset/test.csv', index_col='Id')
     
     train_data.dropna(axis=0, subset=['SalePrice'], inplace=True)
     y = train_data['SalePrice']
@@ -77,7 +77,7 @@ def test_model_training_and_prediction():
     assert mae > 0, f"Model evaluation failed: MAE is {mae}"
 
 def test_mae_threshold():
-    train_data = pd.read_csv('MLOPs_Assignment_1/dataset/train.csv', index_col='Id')
+    train_data = pd.read_csv('dataset/train.csv', index_col='Id')
     train_data.dropna(axis=0, subset=['SalePrice'], inplace=True)
     y = train_data['SalePrice']
     train_data.drop(['SalePrice'], axis=1, inplace=True)
