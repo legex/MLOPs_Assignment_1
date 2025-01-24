@@ -6,8 +6,8 @@ from sklearn.metrics import mean_absolute_error
 import joblib
 
 # Read the data
-X = pd.read_csv('MLOPs_Assignment_1/dataset/train.csv', index_col='Id')
-X_test_full = pd.read_csv('MLOPs_Assignment_1/dataset/test.csv', index_col='Id')
+X = pd.read_csv('dataset/train.csv', index_col='Id')
+X_test_full = pd.read_csv('dataset/test.csv', index_col='Id')
 
 # Remove rows with missing target, separate target from predictors
 X.dropna(axis=0, subset=['SalePrice'], inplace=True)
