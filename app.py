@@ -9,10 +9,8 @@ model = joblib.load('xgboost_model.joblib')
 
 @app.route('/predict', methods=['POST'])
 def predict():
-    # Get the input data (you would need to modify this to match your data format)
     data = request.get_json()
 
-    # Here, I'm assuming you receive a list of feature values for prediction
     features = data['features']
 
     # Predict using the loaded model
